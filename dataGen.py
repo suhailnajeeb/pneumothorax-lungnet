@@ -8,6 +8,7 @@ import numpy as np
 from mask_functions import rle2mask
 import cv2
 import h5py
+import tqdm
 
 PATH_TRAIN = '../Data/dicom-images-train/'
 PATH_TEST = '../Data/dicom-images-test/'
@@ -23,13 +24,35 @@ for f in train: #remove images without labels
     name = f.split('/')[-1][:-4]
     if name in idxs: train_names.append(f)
 
+trueOnly = True
+
 IMG_SIZE = 256
 resize = (IMG_SIZE, IMG_SIZE)
 
 nimages = len(train_names)
 shape = (nimages, IMG_SIZE, IMG_SIZE)
 
-h5path = '../out/train.h5'
+h5path = '../out/train_' + str(IMG_SIZE) + '.h5'
+if trueOnly:
+    h5path = '../out/train_true_' + str(IMG_SIZE) + '.h5'
+
+
+
+# Keeping only true names:
+
+if trueOnly:
+    SEGMENTATION = '../Data/train-rle.csv'
+    anns = pd.read_csv(SEGMENTATION)
+
+    pneumothorax_anns = anns[anns.EncodedPixels != " -1"].ImageId.unique().tolist()
+
+    true_names = []
+    for f in train_names: #remove images without labels
+        name = f.split('/')[-1][:-4]
+        if name in pneumothorax_anns: true_names.append(f)
+    
+    train_names = true_names
+
 
 h5file = h5py.File(h5path, "w")
 h5file.create_dataset("image", shape)
@@ -37,13 +60,13 @@ h5file.create_dataset("mask", shape)
 
 didx = 0
 
-for scanPath in train_names:
+print("Creating Dataset")
+
+for scanPath in tqdm.tqdm(train_names):
     img, imgMask = processScan(scanPath, df, resize)
     h5file["image"][didx] = img
     h5file["mask"][didx] = imgMask
     didx = didx+1
-    if(didx%100 == 0):
-        print("Processed Image: " + scanPath.split('/')[-1][:-4]) 
 
 h5file.close()
 
