@@ -11,7 +11,7 @@ from keras.callbacks import ModelCheckpoint, EarlyStopping, TensorBoard, CSVLogg
 
 batchSize = 32
 
-h5path = "../out/train.h5"
+h5path = "../out/train_true_256.h5"
 h5file = h5py.File(h5path, "r")
 
 n = h5file["image"].shape[0]
@@ -22,7 +22,7 @@ train_index, test_index = train_test_split(a, test_size=0.2, random_state=42)
 trainGen = generator(h5file, train_index, batchSize)
 testGen = generator(h5file, test_index, batchSize)
 
-x,y = next(trainGen)
+
 weightsFolder = '../out/weights/'
 modelName = 'LungNet001a'
 bestModelPath = '../out/weights/best.hdf5'
@@ -44,8 +44,8 @@ model.compile(optimizer='adam', loss='log_dice_coef_loss', metrics=[dice_coef])
 model.summary()
 
 # Fit the Model
-
-#model.fit(x,y) # Use this line to check if the model is compiling and ignore others
+# x,y = next(trainGen)
+# model.fit(x,y) # Use this line to check if the model is compiling and ignore others
 
 check1 = ModelCheckpoint(os.path.join(weightsFolder, modelName + "_{epoch:02d}-loss-{val_loss:.3f}.hdf5"), monitor='val_loss', save_best_only=True, mode='auto')
 check2 = ModelCheckpoint(bestModelPath, monitor='val_loss', save_best_only=True, mode='auto')
