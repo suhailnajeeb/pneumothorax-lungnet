@@ -26,6 +26,12 @@ from keras.models import load_model
 
 import sys
 
+def log_dice_coef_loss(y_true, y_pred):
+	''' This function calculates the and returns the negative of log of the 
+	dice coefficient between the tensors y_true (ground truth) and y_pred (model output) '''
+
+	return - K.log(dice_coef(y_true,y_pred) + 1e-8)
+
 def dice_coef(y_true, y_pred, smooth=1):
     y_true_f = K.flatten(y_true)
     y_pred_f = K.flatten(y_pred)
