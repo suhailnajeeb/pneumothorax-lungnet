@@ -1,0 +1,7 @@
+{
+    "python.pythonPath": "/home/mhealth-3/.conda/envs/tfgpu/bin/python",
+    "python.linting.flake8Enabled": false,
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true
+    "editor.fontSize": 16
+}
