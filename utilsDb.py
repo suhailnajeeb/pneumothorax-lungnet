@@ -25,5 +25,8 @@ def processScan(name,df,resize = (1024,1024), ORIG_DIM = 1024):
 
     if (resize != (ORIG_DIM,ORIG_DIM)):
         imgMask = cv2.resize(imgMask, resize)
+    
+    img = img/255
+    imgMask = imgMask/255
 
     return img, imgMask
