@@ -10,18 +10,18 @@ import cv2
 import h5py
 import tqdm
 
-PATH_TRAIN = '../Data/dicom-images-train/'
-PATH_TEST = '../Data/dicom-images-test/'
+PATH_TRAIN = '..\\Data\\dicom-images-train\\'
+PATH_TEST = '..\\Data\\dicom-images-test\\'
 
 train = glob2.glob(os.path.join(PATH_TRAIN, '**/*.dcm'))
 test = glob2.glob(os.path.join(PATH_TEST, '**/*.dcm'))
 
-df = pd.read_csv('../Data/train-rle.csv').set_index('ImageId')
+df = pd.read_csv('..\\Data\\train-rle.csv').set_index('ImageId')
 idxs = set(df.index)
 
 train_names = []
 for f in train: #remove images without labels
-    name = f.split('/')[-1][:-4]
+    name = f.split('\\')[-1][:-4]
     if name in idxs: train_names.append(f)
 
 trueOnly = True
@@ -29,30 +29,31 @@ trueOnly = True
 IMG_SIZE = 256
 resize = (IMG_SIZE, IMG_SIZE)
 
-nimages = len(train_names)
-shape = (nimages, IMG_SIZE, IMG_SIZE)
 
-h5path = '../out/train_' + str(IMG_SIZE) + '.h5'
+
+h5path = '..\\out\\train_' + str(IMG_SIZE) + '.h5'
 if trueOnly:
-    h5path = '../out/train_true_' + str(IMG_SIZE) + '.h5'
+    h5path = '..\\out\\train_true_' + str(IMG_SIZE) + '.h5'
 
 
 
 # Keeping only true names:
 
 if trueOnly:
-    SEGMENTATION = '../Data/train-rle.csv'
+    SEGMENTATION = '..\\Data\\train-rle.csv'
     anns = pd.read_csv(SEGMENTATION)
 
     pneumothorax_anns = anns[anns.EncodedPixels != " -1"].ImageId.unique().tolist()
 
     true_names = []
     for f in train_names: #remove images without labels
-        name = f.split('/')[-1][:-4]
+        name = f.split('\\')[-1][:-4]
         if name in pneumothorax_anns: true_names.append(f)
     
     train_names = true_names
 
+nimages = len(train_names)
+shape = (nimages, IMG_SIZE, IMG_SIZE)
 
 h5file = h5py.File(h5path, "w")
 h5file.create_dataset("image", shape)
@@ -62,7 +63,8 @@ didx = 0
 
 print("Creating Dataset")
 
-for scanPath in tqdm.tqdm(train_names):
+for scanPath in train_names:
+    print("processing image: " + str(didx) + " of " + str(nimages))
     img, imgMask = processScan(scanPath, df, resize)
     h5file["image"][didx] = img
     h5file["mask"][didx] = imgMask

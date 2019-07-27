@@ -10,7 +10,7 @@ def processScan(name,df,resize = (1024,1024), ORIG_DIM = 1024):
     if (resize != (ORIG_DIM,ORIG_DIM)):
         img = cv2.resize(img, resize)
 
-    index = name.split('/')[-1][:-4]
+    index = name.split('\\')[-1][:-4]
     masks = df.loc[index,'EncodedPixels']
     mask_count = 0
 

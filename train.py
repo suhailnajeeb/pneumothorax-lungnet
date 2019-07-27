@@ -9,9 +9,9 @@ import os
 
 from keras.callbacks import ModelCheckpoint, EarlyStopping, TensorBoard, CSVLogger, ReduceLROnPlateau
 
-batchSize = 32
+batchSize = 8
 
-h5path = "../out/train_true_256.h5"
+h5path = "..\\out\\train_true_256.h5"
 h5file = h5py.File(h5path, "r")
 
 n = h5file["image"].shape[0]
@@ -23,10 +23,10 @@ trainGen = generator(h5file, train_index, batchSize)
 testGen = generator(h5file, test_index, batchSize)
 
 
-weightsFolder = '../out/weights/'
+weightsFolder = '..\\out\\weights\\'
 modelName = 'LungNet001a'
-bestModelPath = '../out/weights/best.hdf5'
-modelFolder = '/out/model/'
+bestModelPath = '..\\out\\weights\\best.hdf5'
+modelFolder = '..\\out\\model\\'
 
 epochs = 100
 epochStart = 0
@@ -40,7 +40,7 @@ model = LungNet001a()
 
 # Compile the Model & Configure
 
-model.compile(optimizer='adam', loss='log_dice_coef_loss', metrics=[dice_coef])
+model.compile(optimizer='adam', loss=log_dice_coef_loss, metrics=[dice_coef])
 model.summary()
 
 # Fit the Model
