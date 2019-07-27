@@ -1,5 +1,5 @@
 #from modelLib import dummynet
-from modelLib import LungNet001a, dice_coef, log_dice_coef_loss
+from modelLib import LungNet001a, basic_unet, dice_coef, dice_coef_loss
 from utilsTrain import generator
 
 import h5py
@@ -9,7 +9,14 @@ import os
 
 from keras.callbacks import ModelCheckpoint, EarlyStopping, TensorBoard, CSVLogger, ReduceLROnPlateau
 
-batchSize = 8
+import tensorflow as tf
+from keras.backend.tensorflow_backend import set_session
+config = tf.ConfigProto() 
+# dynamically grow GPU memory 
+config.gpu_options.allow_growth = True
+set_session(tf.Session(config=config))
+
+batchSize = 6
 
 h5path = "..\\out\\train_true_256.h5"
 h5file = h5py.File(h5path, "r")
@@ -24,7 +31,7 @@ testGen = generator(h5file, test_index, batchSize)
 
 
 weightsFolder = '..\\out\\weights\\'
-modelName = 'LungNet001a'
+modelName = 'LungNet'
 bestModelPath = '..\\out\\weights\\best.hdf5'
 modelFolder = '..\\out\\model\\'
 
@@ -37,10 +44,11 @@ patience = 50
 
 #model = dummynet()
 model = LungNet001a()
+#model = basic_unet()
 
 # Compile the Model & Configure
 
-model.compile(optimizer='adam', loss=log_dice_coef_loss, metrics=[dice_coef])
+model.compile(optimizer='adam', loss=dice_coef_loss, metrics=[dice_coef])
 model.summary()
 
 # Fit the Model
