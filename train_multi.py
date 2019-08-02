@@ -8,6 +8,8 @@ import numpy as np
 import os
 
 from keras.callbacks import ModelCheckpoint, EarlyStopping, TensorBoard, CSVLogger, ReduceLROnPlateau
+from keras.utils.training_utils import multi_gpu_model
+
 
 import tensorflow as tf
 from keras.backend.tensorflow_backend import set_session
@@ -16,9 +18,10 @@ config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
 set_session(tf.Session(config=config))
 
-batchSize = 2
+batchSize = 4
+NO_GPU = 4
 
-h5path = "..\\out\\train_true_512.h5"
+h5path = "..\\out\\train_true_256.h5"
 h5file = h5py.File(h5path, "r")
 
 n = h5file["image"].shape[0]
@@ -31,7 +34,7 @@ testGen = generator(h5file, test_index, batchSize)
 
 
 weightsFolder = '..\\out\\weights\\'
-modelName = 'LungNet512'
+modelName = 'LungNet'
 bestModelPath = '..\\out\\weights\\best.hdf5'
 modelFolder = '..\\out\\model\\'
 
@@ -44,7 +47,8 @@ patience = 50
 
 #model = dummynet()
 model = LungNet001a()
-#model = basic_unet()
+#model = multi_gpu_model(model, gpus = NO_GPU)
+model = basic_unet()
 
 # Compile the Model & Configure
 
@@ -75,3 +79,6 @@ trained_model = model.fit_generator(trainGen, steps_per_epoch=(len(train_index) 
 trainGen.close()
 testGen.close()
 h5file.close()
+
+''' kahini with the optimizer
+
